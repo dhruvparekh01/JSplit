@@ -11,7 +11,18 @@
   <body class="d-flex flex-column h-100">
       <h2>Contact list:</h2>
       {{list}}
-      <a class="btn btn-primary" href='/add'>Add Contact</a>
+
+      <form action="/search" method="post">
+        Search for a user:
+        <input type="text" name="user_name">
+        <br>
+        <button class='btn btn-primary' type="submit">Search</button>
+
+
+      </form>
+      <div>
+        {{result}}
+      </div>
 
   </body>
 </html>
