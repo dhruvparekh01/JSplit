@@ -1,0 +1,27 @@
+{
+  "name": "jsplit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "test",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dhruvparekh01/JSplit.git"
+  },
+  "keywords": [
+    "jsplit"
+  ],
+  "author": "Dhruv Parekh, Jimmy Ho, Josh Wong, Aaron Lee",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dhruvparekh01/JSplit/issues"
+  },
+  "homepage": "https://github.com/dhruvparekh01/JSplit#readme",
+  "dependencies": {
+    "firebase": "^6.3.4",
+    "hbs": "^4.0.4"
+  }
+}
