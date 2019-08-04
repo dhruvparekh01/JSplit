@@ -49,6 +49,7 @@ app.get('/signin', (req, res) => {
 });
 
 app.post('/newUser', (request, response) => {
+  /* Function to add a new user */
   var email = request.body.email;
   var password1 = request.body.password1;
   var password2 = request.body.password2;
@@ -57,8 +58,11 @@ app.post('/newUser', (request, response) => {
 
 
   if (password1 === password2) {
-    firebase.auth().createUserWithEmailAndPassword(email, password1)
+    firebase.auth().createUserWithEmailAndPassword(email, password1)  // firebase Authentication
       .then(function () {
+        /* If firebase Authentication is successful, make a table for the user.
+        The name of the table is the user's email. This table represents the
+        user's contact list. Add a demo user to this table.*/
         db.collection(email).add({
             Name: 'Demo User',
             Email: 'Demo email',
@@ -72,7 +76,7 @@ app.post('/newUser', (request, response) => {
           });
 
 
-
+          /* Add the user to the "all_users" table*/
         db.collection('all_users').add({
             Name: name,
             Email: email,
@@ -85,8 +89,8 @@ app.post('/newUser', (request, response) => {
           });
 
 
+          //Now render the custom page created for the user
         response.render('user.hbs', {
-          list: 'No contacts found'
         });
       })
       .catch(function (error) {
@@ -98,14 +102,14 @@ app.post('/newUser', (request, response) => {
 });
 
 
+// Function for Signing in the returning users
 app.post('/retUser', (request, response) => {
   var email = request.body.email;
   var password1 = request.body.password1;
-  cur_user = email;
+  cur_user = email;  // The current user variable maintains the email of the
+                    // user signing for further functions
 
-  // console.log('email:' + email + 'Pass' + password1);
-
-  firebase.auth().signInWithEmailAndPassword(email, password1)
+  firebase.auth().signInWithEmailAndPassword(email, password1)  // firebase sign in
     .then(function () {
       var list = ''
       firebase.firestore().collection(cur_user).get().then((querySnapshot) => {
@@ -130,18 +134,20 @@ app.post('/retUser', (request, response) => {
 
 
 
+// Function to add new people in the contact list
 app.post('/search', (request, response) => {
   var flag = 0
   var result = ''
-  var email = request.body.user_name
+  var email = request.body.user_name  // Get the email of the user to added
   var docRef = firebase.firestore().collection("all_users").doc()
   firebase.firestore().collection("all_users").get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
       console.log(email);
       console.log(doc.data().Email);
-      if (email == doc.data().Email) {
-        console.log("FUCK");
+      if (email == doc.data().Email)  // If a matching email is found in the database
+      {
         db.collection(cur_user).add({
+          // adding the found user to contacts
           Name: doc.data().Name,
           Email: doc.data().Email,
           Balance: 0
