@@ -120,7 +120,7 @@ app.post('/retUser', (request, response) => {
       });
     })
     .catch(function (error) {
-      res.render('login.hbs', {
+      response.render('login.hbs', {
         message: error.message
       });
       console.log("Error with code:", error.code, "\nWith message:", error.message);
