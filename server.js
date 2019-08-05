@@ -112,15 +112,15 @@ app.post('/retUser', (request, response) => {
   firebase.auth().signInWithEmailAndPassword(email, password1)  // firebase sign in
     .then(function () {
       var list = ''
-      firebase.firestore().collection(cur_user).get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          list += doc.data().Name;
-          console.log('Friend: ' + doc.data().Name)
-        });
-      });
-      console.log(list);
+      // firebase.firestore().collection(cur_user).get().then((querySnapshot) => {
+      //   querySnapshot.forEach((doc) => {
+      //     list += doc.data().Name;
+      //     console.log('Friend: ' + doc.data().Name)
+      //   });
+      email = firebase.auth().currentUser.email;
+      console.log(email);
       response.render('user.hbs', {
-        list: list
+        user: email
       });
     })
     .catch(function (error) {

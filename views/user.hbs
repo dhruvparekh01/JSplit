@@ -9,8 +9,9 @@
   <body class="d-flex flex-column h-100">
     <div class="main">
       <h1 align='center'>User</h1>
-      <h2>Contact list:</h2>  
-      {{list}}
+      <h2>Contact list:</h2>
+      <div id='contacts'>
+      </div>
 
       <form action="/search" method="post">
         Search for a user:
@@ -19,11 +20,21 @@
         <button class='btn btn-primary' type="submit">Search</button>
       </form>
     </div>
-    
+
     <div>
       {{result}}
     </div>
-    
-    <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
+    <div id='user'>
+      {{user}}
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-auth.js"></script>
+    <script src="../js/Script.js"></script>
+    <script>
+      var user = document.getElementById('user').innerHTML;
+      showContacts(user);
+    </script>
   </body>
 </html>
