@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "test",
+    "test": "mocha",
     "start": "node server.js"
   },
   "repository": {
@@ -23,5 +23,8 @@
   "dependencies": {
     "firebase": "^6.3.4",
     "hbs": "^4.0.4"
+  },
+  "devDependencies": {
+    "mocha": "^6.2.0"
   }
 }

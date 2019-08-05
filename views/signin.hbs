@@ -1,27 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>Sign In</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
-  </head>
 
-  <h1 align='center'>Sign In</h1>
-  <body class="d-flex flex-column h-100">
-    <div class="container">
-        <form action="/retUser" method="post" id="registration_form" name="registration_form">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" class="form-control" value="" placeholder="example@mail.com" required>
-          </div>
-          <div class="form-group">
-            <label for="password1">Password</label>
-            <input type="password" id="password1" name="password1" class="form-control" value="" placeholder="Must be more than 6 characters" required>
-          </div>
-          <button type="submit" class="btn btn-primary">Submit</button>
-         </form>
+<head>
+  <meta charset="utf-8">
+  <title>Sign In</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script src="https://www.gstatic.com/firebasejs/6.3.3/firebase-app.js"></script>
+</head>
+<h1 align='center'>Sign In</h1>
 
-    </div>
-  </body>
+<body class="d-flex flex-column h-100">
+  <div class="container">
+    <form action="/retUser" method="post" id="registration_form" name="registration_form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-control" value="" placeholder="example@mail.com"
+          required>
+      </div>
+      <div class="form-group">
+        <label for="password1">Password</label>
+        <input type="password" id="password1" name="password1" class="form-control" value=""
+          placeholder="Must be more than 6 characters" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+</body>
+
 </html>
