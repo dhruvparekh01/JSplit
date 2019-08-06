@@ -111,14 +111,7 @@ app.post('/retUser', (request, response) => {
 
   firebase.auth().signInWithEmailAndPassword(email, password1)  // firebase sign in
     .then(function () {
-      var list = ''
-      // firebase.firestore().collection(cur_user).get().then((querySnapshot) => {
-      //   querySnapshot.forEach((doc) => {
-      //     list += doc.data().Name;
-      //     console.log('Friend: ' + doc.data().Name)
-      //   });
-      email = firebase.auth().currentUser.email;
-      console.log(email);
+      email = firebase.auth().currentUser.email;  // get logged in user's email
       response.render('user.hbs', {
         user: email
       });
@@ -138,12 +131,13 @@ app.post('/retUser', (request, response) => {
 app.post('/search', (request, response) => {
   var flag = 0
   var result = ''
-  var email = request.body.user_name  // Get the email of the user to added
+
+  // console.log('Got email: '+email);
   var docRef = firebase.firestore().collection("all_users").doc()
   firebase.firestore().collection("all_users").get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
-      console.log(email);
-      console.log(doc.data().Email);
+      var email = request.body.user_name  // Get the email of the user to addeds
+
       if (email == doc.data().Email)  // If a matching email is found in the database
       {
         db.collection(cur_user).add({
@@ -160,21 +154,11 @@ app.post('/search', (request, response) => {
       }
     });
   });
-  // if(flag === 0)
-  // {
-  //   result = 'Sorry the user cannot be found'
-  // }
-  var list = []
-  firebase.firestore().collection(cur_user).get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-      list.push(doc.data().Name)
-    });
-  });
-  console.log(list);
 
+  email = firebase.auth().currentUser.email;  // get logged in user's email
 
   response.render('user.hbs', {
-    list: list,
+    user: email,
     result: result
   });
 });
