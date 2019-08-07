@@ -1,0 +1,118 @@
+/*----------------------------------------  Global Settings ---------------------------------------- */
+* {
+    font-family: 'Roboto', sans-serif;
+    font-weight: lighter !important;
+}
+
+nav {
+    border: red solid 2px;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+}
+
+/*----------------------------------------  Header ---------------------------------------- */
+
+/*----------------------------------------  Landing page ---------------------------------------- */
+
+.landing:after,
+.landing:before {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    content: '';
+    z-index: -1;
+}
+
+.landing:after {
+    background: linear-gradient(-45deg, #FFDCD5, #d5f8ff);
+    background-size: 200%;
+    animation: landing_anim 15s linear infinite;
+    -webkit-animation: landing_anim 15s linear infinite;
+    -moz-animation: landing_anim 15s linear infinite;
+}
+
+.landing:before {
+    background: #d5f8ff;
+    background-size: cover;
+}
+
+@keyframes landing_anim {
+    25% {
+        background-position: 0 100%
+    }
+
+    50% {
+        background-position: 100% 100%
+    }
+
+    75% {
+        background-position: 100% 0
+    }
+
+    100% {
+        background-position: 0 0
+    }
+}
+
+@-webkit-keyframes landing_anim {
+    25% {
+        background-position: 0 100%
+    }
+
+    50% {
+        background-position: 100% 100%
+    }
+
+    75% {
+        background-position: 100% 0
+    }
+
+    100% {
+        background-position: 0 0
+    }
+}
+
+@-moz-keyframes landing_anim {
+    25% {
+        background-position: 0 100%
+    }
+
+    50% {
+        background-position: 100% 100%
+    }
+
+    75% {
+        background-position: 100% 0
+    }
+
+    100% {
+        background-position: 0 0
+    }
+}
+
+#intro {
+    display: inline-block;
+    text-align: justify;
+    margin: 15% 15% 20%;
+}
+
+#startbtn {
+    display: block;
+    position: relative;
+    left: 45%;
+}
+
+/*---------------------------------------- Footer ---------------------------------------- */
+footer {
+    position: fixed;
+    clear: both;
+    bottom: 0;
+    left: 50%;
+    text-align: center;
+}
