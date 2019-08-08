@@ -21,8 +21,10 @@
   },
   "homepage": "https://github.com/dhruvparekh01/JSplit#readme",
   "dependencies": {
+    "express-handlebars": "^3.1.0",
     "firebase": "^6.3.4",
-    "hbs": "^4.0.4"
+    "hbs": "^4.0.4",
+    "path": "^0.12.7"
   },
   "devDependencies": {
     "mocha": "^6.2.0"
