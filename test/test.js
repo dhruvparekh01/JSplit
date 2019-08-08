@@ -1,3 +1,11 @@
+const test = require("firebase-functions-test")(
+  {
+    databaseURL: "https://test-6ec85.firebaseio.com",
+    projectId: "test-6ec85",
+    storageBucket: "test-6ec85.appspot.com"
+  },
+  "../serviceAccountKey.json"
+);
 var assert = require("assert");
 
 describe("Array", function() {
