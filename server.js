@@ -189,14 +189,16 @@ app.post('/search', (request, response) => {
         }).catch(function (error) {
           console.error("Error adding document: ", error);
         });
-    });
+    }
+  }); 
 
   // email = firebase.auth().currentUser.email;  // get logged in user's email
 
-  response.render('user.hbs', {
-    // user: email,
-    result: result
+    response.render('user.hbs', {
+      // user: email,
+      result: result
   });
+});
 });
 
 
@@ -240,3 +242,4 @@ app.use(express.static(__dirname));
 var server = app.listen(process.env.PORT || 8000, () => {
   console.log('server is listening on port', server.address().port);
 });
+  
