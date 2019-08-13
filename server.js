@@ -10,6 +10,8 @@ var app = express();
 
 app.use(express.static(path.join(__dirname, '/public')));
 
+var admin = require('firebase-admin');
+
 /*
 app.set('view engine', 'hbs');
 app.use('/', express.static(__dirname));
@@ -190,7 +192,7 @@ app.post('/search', (request, response) => {
           console.error("Error adding document: ", error);
         });
     }
-  }); 
+  });
 
   // email = firebase.auth().currentUser.email;  // get logged in user's email
 
@@ -220,9 +222,15 @@ app.post('/addGrp', (request, response) => {
 
     db.collection('users').get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        if(doc.data().Email === cur_user)
+        // console.log(doc.data().Name)
+        if(doc.data().Email === firebase.auth().currentUser.email)
         {
-          console.log(doc.data());
+          const new_arr = doc.data().Groups;
+          new_arr.push('That one');
+          db.collection("users").doc(doc.id).update({
+            Groups: new_arr
+          });
+          console.log(doc.data().Groups);
         }
       })
     });
@@ -235,6 +243,11 @@ app.post('/addGrp', (request, response) => {
 
 });
 
+app.post('/test', (request, response) => {
+  console.log('Test running...');
+  firebase.database().ref('new/' + 'Oy6fOsKAWS1fvNTQnUSH' + '/test').set('Success');
+});
+
 
 
 //start server
@@ -242,4 +255,3 @@ app.use(express.static(__dirname));
 var server = app.listen(process.env.PORT || 8000, () => {
   console.log('server is listening on port', server.address().port);
 });
-  
