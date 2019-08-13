@@ -22,3 +22,36 @@ function showContacts(email)
     });
   });
 }
+
+// function addgroup()
+// {
+//   var name = document.getElementById('grp_name').value;
+//   var cur_user = document.getElementById('user').innerHTML.trim();
+//   db.collection('users').get().then((querySnapshot) => {
+//     querySnapshot.forEach((doc) => {
+//       if(doc.data().Email === cur_user)
+//       {
+//         db.collection('groups').add({
+//             Group_name: name
+//           })
+//           .then(function (docRef) {
+//             console.log("Document written with ID: ", docRef.id);
+//           })
+//           .catch(function (error) {
+//             console.error("Error adding document: ", error);
+//           });
+//       }
+//     });
+//   });
+// }
+
+  function addMember()
+  {
+
+  }
+
+
+
+
+
+}

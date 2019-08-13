@@ -48,6 +48,13 @@ app.get('/signin', (req, res) => {
   });
 });
 
+app.get('/addGrp', (req, res) => {
+  res.render('addGrp.hbs', {
+    title: 'Add Group',
+    user: firebase.auth().currentUser.email
+  });
+});
+
 app.post('/newUser', (request, response) => {
   /* Function to add a new user */
   var email = request.body.email;
@@ -60,33 +67,36 @@ app.post('/newUser', (request, response) => {
   if (password1 === password2) {
     firebase.auth().createUserWithEmailAndPassword(email, password1)  // firebase Authentication
       .then(function () {
-        /* If firebase Authentication is successful, make a table for the user.
-        The name of the table is the user's email. This table represents the
-        user's contact list. Add a demo user to this table.*/
-        db.collection(email).add({
-            Name: 'Demo User',
-            Email: 'Demo email',
-            Balance: 0
-          })
-          .then(function (docRef) {
-            console.log("Document written with ID: ", docRef.id);
-          })
-          .catch(function (error) {
-            console.error("Error adding document: ", error);
-          });
 
 
-          /* Add the user to the "all_users" table*/
-        db.collection('all_users').add({
-            Name: name,
-            Email: email,
-          })
-          .then(function (docRef) {
-            console.log("Document written with ID: ", docRef.id);
-          })
-          .catch(function (error) {
-            console.error("Error adding document: ", error);
-          });
+        /* Add the user to the "users" table*/
+      db.collection('users').add({
+          Name: name,
+          Email: email,
+          UID: firebase.auth().currentUser.uid,
+          Groups: []
+        })
+        .then(function (docRef) {
+          console.log("Document written with ID: ", docRef.id);
+          var uid = firebase.auth().currentUser.uid;
+          console.log(uid);
+
+          /* If firebase Authentication is successful, make a table for the user.
+          The name of the table is the user's email. This table represents the
+          user's contact list. Add a demo user to this table.*/
+          db.collection('balances').doc(uid).set({
+              placeholder: 'you need contacts'
+            })
+            .then(function (docRef) {
+              // console.log("Document written with ID: ", docRef.id);
+            })
+            .catch(function (error) {
+              console.error("Error adding document: ", error);
+            });
+        })
+        .catch(function (error) {
+          console.error("Error adding document: ", error);
+        });
 
 
           //Now render the custom page created for the user
@@ -133,18 +143,29 @@ app.post('/search', (request, response) => {
   var result = ''
 
   // console.log('Got email: '+email);
-  var docRef = firebase.firestore().collection("all_users").doc()
-  firebase.firestore().collection("all_users").get().then((querySnapshot) => {
+  // var docRef = firebase.firestore().collection("users").doc()
+  firebase.firestore().collection("users").get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
       var email = request.body.user_name  // Get the email of the user to addeds
 
       if (email == doc.data().Email)  // If a matching email is found in the database
       {
-        db.collection(cur_user).add({
+        var uid1 = firebase.auth().currentUser.uid;
+        var uid2 = doc.data().UID;
+
+        db.collection('balances').doc(uid1).update({
           // adding the found user to contacts
-          Name: doc.data().Name,
-          Email: doc.data().Email,
-          Balance: 0
+          [uid2] : 0
+        }).then(function (docRef) {
+          result = doc.data().Name + 'has been added to your contacts.';
+          flag = 1;
+        }).catch(function (error) {
+          console.error("Error adding document: ", error);
+        });
+
+        db.collection('balances').doc(uid2).update({
+          // adding the found user to contacts
+          [uid1] : 0
         }).then(function (docRef) {
           result = doc.data().Name + 'has been added to your contacts.';
           flag = 1;
@@ -155,13 +176,49 @@ app.post('/search', (request, response) => {
     });
   });
 
-  email = firebase.auth().currentUser.email;  // get logged in user's email
+  // email = firebase.auth().currentUser.email;  // get logged in user's email
 
   response.render('user.hbs', {
-    user: email,
+    // user: email,
     result: result
   });
 });
+
+
+app.post('/addGrp', (request, response) => {
+  var name = request.body.grp_name;
+  var cur_user = firebase.auth().currentUser.Email;
+
+  db.collection('groups').add({
+      Group_name: name,
+      Member1: firebase.auth().currentUser.uid
+    })
+    .then(function (docRef) {
+      console.log("Document written with ID: ", docRef.id);
+    })
+    .catch(function (error) {
+      console.error("Error adding document: ", error);
+    });
+
+
+    db.collection('users').get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        if(doc.data().Email === cur_user)
+        {
+          console.log(doc.data());
+        }
+      })
+    });
+        // db.collection('users').doc(firebase.auth().currentUser.uid).update({
+        //
+        // })
+
+
+  response.render('user.hbs');
+
+});
+
+
 
 //start server
 app.use(express.static(__dirname));
