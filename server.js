@@ -243,7 +243,7 @@ app.post("/addGrp", (request, response) => {
         if(doc.data().Email === firebase.auth().currentUser.email)
         {
           const new_arr = doc.data().Groups;
-          new_arr.push('That one');
+          new_arr.push(name);
           db.collection("users").doc(doc.id).update({
             Groups: new_arr
           });
