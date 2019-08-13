@@ -144,9 +144,20 @@ app.post("/retUser", (request, response) => {
     .signInWithEmailAndPassword(email, password1) // firebase sign in
     .then(function() {
       email = firebase.auth().currentUser.email; // get logged in user's email
-      response.render("user.hbs", {
-        user: email
+      db.collection('users').get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          if(doc.data().Email === email)
+          {
+            const grps = doc.data().Groups;
+
+            response.render("user.hbs", {
+              user: email,
+              groups: grps
+            });
+          }
+        });
       });
+
     })
     .catch(function(error) {
       response.render("login.hbs", {
