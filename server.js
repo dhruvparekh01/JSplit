@@ -76,6 +76,41 @@ app.get("/addGrp", (req, res) => {
   });
 });
 
+app.get("/group/:page", (request, response) => {  // Unique page for each group
+  var curUrl = request.params.page;  // get the current url which is the group name and the email of member calling for it, concatnated with _
+  var grp_name = curUrl.substr(curUrl.indexOf('_')+1,curUrl.length);  // extract the group name
+  var mem_name = curUrl.substr(0,curUrl.indexOf('_'));  // extract the member email
+  console.log(grp_name);
+  console.log(mem_name);
+
+  db.collection('groups').get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      if(doc.data().Group_name === grp_name)  // if the group with same name is found in the database
+      {
+        // if(doc.data().Member1 === mem_name)  // check if the member calling for the group is a member of it (as there can be multiple groups with same name)
+        // {
+          var members = doc.data().Member1;
+
+          db.collection('users').get().then((querySnapshot) => {  // Get the names of all members from the users table nased on their UIDs stored in the Group table
+            querySnapshot.forEach((doc) => {
+              if(doc.data().UID === members)
+              {
+                response.render('test.hbs',{
+                  grp: grp_name,
+                  member: doc.data().Name
+                });
+              }
+            });
+          });
+        // }
+      }
+    });
+  });
+
+
+
+});
+
 app.post("/newUser", (request, response) => {
   /* Function to add a new user */
   var email = request.body.email;
@@ -259,6 +294,9 @@ app.post("/addGrp", (request, response) => {
             Groups: new_arr
           });
           console.log(doc.data().Groups);
+          response.render("user.hbs",{
+            groups: doc.data().Groups
+          });
         }
       });
     });
@@ -266,7 +304,7 @@ app.post("/addGrp", (request, response) => {
   //
   // })
 
-  response.render("user.hbs");
+
 });
 
 //start server
