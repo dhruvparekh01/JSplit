@@ -10,7 +10,7 @@ var app = express();
 
 app.use(express.static(path.join(__dirname, "/public")));
 
-var admin = require('firebase-admin');
+var admin = require("firebase-admin");
 
 /*
 app.set('view engine', 'hbs');
@@ -76,39 +76,47 @@ app.get("/addGrp", (req, res) => {
   });
 });
 
-app.get("/group/:page", (request, response) => {  // Unique page for each group
-  var curUrl = request.params.page;  // get the current url which is the group name and the email of member calling for it, concatnated with _
-  var grp_name = curUrl.substr(curUrl.indexOf('_')+1,curUrl.length);  // extract the group name
-  var mem_name = curUrl.substr(0,curUrl.indexOf('_'));  // extract the member email
+app.get("/group/:page", (request, response) => {
+  // TODO: we should use document id as the group url instead of email_groupname
+  const ref = db.collection("groups").doc();
+  const id = ref.id;
+  console.log(id);
+  // console.log(ref);
+
+  // Unique page for each group
+  var curUrl = request.params.id; // get the current url which is the group name and the email of member calling for it, concatnated with _
+  var grp_name = id; // extract the group name
+  var mem_name = ""; // extract the member email
   console.log(grp_name);
   console.log(mem_name);
 
-  db.collection('groups').get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-      if(doc.data().Group_name === grp_name)  // if the group with same name is found in the database
-      {
-        // if(doc.data().Member1 === mem_name)  // check if the member calling for the group is a member of it (as there can be multiple groups with same name)
-        // {
+  db.collection("groups")
+    .get()
+    .then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        if (doc.data().Group_name === grp_name) {
+          // if the group with same name is found in the database
+          // if(doc.data().Member1 === mem_name)  // check if the member calling for the group is a member of it (as there can be multiple groups with same name)
+          // {
           var members = doc.data().Member1;
 
-          db.collection('users').get().then((querySnapshot) => {  // Get the names of all members from the users table nased on their UIDs stored in the Group table
-            querySnapshot.forEach((doc) => {
-              if(doc.data().UID === members)
-              {
-                response.render('test.hbs',{
-                  grp: grp_name,
-                  member: doc.data().Name
-                });
-              }
+          db.collection("users")
+            .get()
+            .then(querySnapshot => {
+              // Get the names of all members from the users table nased on their UIDs stored in the Group table
+              querySnapshot.forEach(doc => {
+                if (doc.data().UID === members) {
+                  response.render("test.hbs", {
+                    grp: grp_name,
+                    member: doc.data().Name
+                  });
+                }
+              });
             });
-          });
-        // }
-      }
+          // }
+        }
+      });
     });
-  });
-
-
-
 });
 
 app.post("/newUser", (request, response) => {
@@ -179,20 +187,20 @@ app.post("/retUser", (request, response) => {
     .signInWithEmailAndPassword(email, password1) // firebase sign in
     .then(function() {
       email = firebase.auth().currentUser.email; // get logged in user's email
-      db.collection('users').get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          if(doc.data().Email === email)
-          {
-            const grps = doc.data().Groups;
+      db.collection("users")
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            if (doc.data().Email === email) {
+              const grps = doc.data().Groups;
 
-            response.render("user.hbs", {
-              user: email,
-              groups: grps
-            });
-          }
+              response.render("user.hbs", {
+                user: email,
+                groups: grps
+              });
+            }
+          });
         });
-      });
-
     })
     .catch(function(error) {
       response.render("login.hbs", {
@@ -277,24 +285,28 @@ app.post("/addGrp", (request, response) => {
     })
     .then(function(docRef) {
       console.log("Document written with ID: ", docRef.id);
+      // refresh page to get new group?
+      // setTimeout(res.redirect(req.originalUrl, 2000));
     })
     .catch(function(error) {
       console.error("Error adding document: ", error);
     });
 
-
-    db.collection('users').get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
+  db.collection("users")
+    .get()
+    .then(querySnapshot => {
+      querySnapshot.forEach(doc => {
         // console.log(doc.data().Name)
-        if(doc.data().Email === firebase.auth().currentUser.email)
-        {
+        if (doc.data().Email === firebase.auth().currentUser.email) {
           const new_arr = doc.data().Groups;
           new_arr.push(name);
-          db.collection("users").doc(doc.id).update({
-            Groups: new_arr
-          });
+          db.collection("users")
+            .doc(doc.id)
+            .update({
+              Groups: new_arr
+            });
           console.log(doc.data().Groups);
-          response.render("user.hbs",{
+          response.render("user.hbs", {
             groups: doc.data().Groups
           });
         }
@@ -303,8 +315,6 @@ app.post("/addGrp", (request, response) => {
   // db.collection('users').doc(firebase.auth().currentUser.uid).update({
   //
   // })
-
-
 });
 
 //start server
