@@ -281,36 +281,37 @@ app.post("/addGrp", (request, response) => {
   db.collection("groups")
     .add({
       Group_name: name,
-      Member1: firebase.auth().currentUser.uid
+      Members: [firebase.auth().currentUser.uid]
     })
     .then(function(docRef) {
       console.log("Document written with ID: ", docRef.id);
+      var grpid = docRef.id;
       // refresh page to get new group?
       // setTimeout(res.redirect(req.originalUrl, 2000));
+
+      db.collection("users")
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            // console.log(doc.data().Name)
+            if (doc.data().Email === firebase.auth().currentUser.email) {
+              const new_arr = doc.data().Groups;
+              new_arr.push(grpid);
+              db.collection("users")
+                .doc(doc.id)
+                .update({
+                  Groups: new_arr
+                });
+              console.log(doc.data().Groups);
+              response.render("user.hbs", {
+                groups: doc.data().Groups
+              });
+            }
+          });
+        });
     })
     .catch(function(error) {
       console.error("Error adding document: ", error);
-    });
-
-  db.collection("users")
-    .get()
-    .then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        // console.log(doc.data().Name)
-        if (doc.data().Email === firebase.auth().currentUser.email) {
-          const new_arr = doc.data().Groups;
-          new_arr.push(name);
-          db.collection("users")
-            .doc(doc.id)
-            .update({
-              Groups: new_arr
-            });
-          console.log(doc.data().Groups);
-          response.render("user.hbs", {
-            groups: doc.data().Groups
-          });
-        }
-      });
     });
   // db.collection('users').doc(firebase.auth().currentUser.uid).update({
   //
