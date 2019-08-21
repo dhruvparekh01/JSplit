@@ -78,45 +78,46 @@ app.get("/addGrp", (req, res) => {
 
 app.get("/group/:page", (request, response) => {
   // TODO: we should use document id as the group url instead of email_groupname
-  const ref = db.collection("groups").doc();
-  const id = ref.id;
-  console.log(id);
-  // console.log(ref);
-
-  // Unique page for each group
-  var curUrl = request.params.id; // get the current url which is the group name and the email of member calling for it, concatnated with _
-  var grp_name = id; // extract the group name
-  var mem_name = ""; // extract the member email
-  console.log(grp_name);
-  console.log(mem_name);
-
-  db.collection("groups")
-    .get()
-    .then(querySnapshot => {
-      querySnapshot.forEach(doc => {
-        if (doc.data().Group_name === grp_name) {
-          // if the group with same name is found in the database
-          // if(doc.data().Member1 === mem_name)  // check if the member calling for the group is a member of it (as there can be multiple groups with same name)
-          // {
-          var members = doc.data().Member1;
-
-          db.collection("users")
-            .get()
-            .then(querySnapshot => {
-              // Get the names of all members from the users table nased on their UIDs stored in the Group table
-              querySnapshot.forEach(doc => {
-                if (doc.data().UID === members) {
-                  response.render("test.hbs", {
-                    grp: grp_name,
-                    member: doc.data().Name
-                  });
-                }
-              });
-            });
-          // }
-        }
-      });
-    });
+  // const ref = db.collection("groups").doc();
+  // const id = ref.id;
+  // console.log(id);
+  // // console.log(ref);
+  //
+  // // Unique page for each group
+  // var curUrl = request.params.id; // get the current url which is the group name and the email of member calling for it, concatnated with _
+  // var grp_name = id; // extract the group name
+  // var mem_name = ""; // extract the member email
+  // console.log(grp_name);
+  // console.log(mem_name);
+  //
+  // db.collection("groups")
+  //   .get()
+  //   .then(querySnapshot => {
+  //     querySnapshot.forEach(doc => {
+  //       if (doc.data().Group_name === grp_name) {
+  //         // if the group with same name is found in the database
+  //         // if(doc.data().Member1 === mem_name)  // check if the member calling for the group is a member of it (as there can be multiple groups with same name)
+  //         // {
+  //         var members = doc.data().Member1;
+  //
+  //         db.collection("users")
+  //           .get()
+  //           .then(querySnapshot => {
+  //             // Get the names of all members from the users table nased on their UIDs stored in the Group table
+  //             querySnapshot.forEach(doc => {
+  //               if (doc.data().UID === members) {
+  //                 response.render("test.hbs", {
+  //                   grp: grp_name,
+  //                   member: doc.data().Name
+  //                 });
+  //               }
+  //             });
+  //           });
+  //         // }
+  //       }
+  //     });
+  //   });
+  response.render("test.hbs");
 });
 
 app.post("/newUser", (request, response) => {
@@ -193,7 +194,7 @@ app.post("/retUser", (request, response) => {
           querySnapshot.forEach(doc => {
             if (doc.data().Email === email) {
               const grps = doc.data().Groups;
-              var grpNames = [];
+              var grpNames = {};
               var i;
 
               db.collection("groups")
@@ -204,10 +205,14 @@ app.post("/retUser", (request, response) => {
                     {
                       if(grps[i] === doc.id)
                       {
-                        grpNames.push(doc.data().Group_name);
+                        // var object = {};
+                        grpNames[doc.data().Group_name] = doc.id;
+                        // console.log(object);
+                        // grpNames.push(object);
                       }
                     }
                   })
+                  // console.log(grpNames);
 
                   response.render("user.hbs", {
                     user: email,

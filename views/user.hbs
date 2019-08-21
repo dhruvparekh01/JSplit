@@ -23,8 +23,8 @@
 <div id='groups' style='border: red solid 1px;'>
   <h5> Groups: </h5>
   {{#each groups}}
-    <button onclick='seeGrp()'>{{this}}</button>
-    <!--Display each group as a button. Here, groups is an array passed from the server -->
+    <button onclick='seeGrp()' id={{this}}>{{@key}}</button>
+    <!--Display each group as a button. Here, groups is an object whith keys as the group name and values are the group ids passed from the server -->
     <br>
   {{/each}}
    <a class="btn btn-primary" href="/addGrp">Add</a>
@@ -33,14 +33,14 @@
 <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-auth.js"></script>
 <script type="text/javascript">
-  function seeGrp()
+  function seeGrp(id)
   {
     var a = event.target || event.srcElement;
     // Get the source of event
-    var curUser = document.getElementById('user').innerHTML;
-    console.log("http://localhost:8000/group/" + curUser + '_' + a.innerHTML);
-    window.location.href="http://localhost:8000/group/" + curUser + '_' + a.innerHTML;
-    // Call the custom url
+    // var curUser = document.getElementById('user').innerHTML;
+    window.location.href="http://localhost:8000/group/" + a.id;
+    // // Call the custom url
+    // console.log(JSON.stringify(id));
   }
 </script>
 </body>
