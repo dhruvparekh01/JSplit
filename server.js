@@ -193,11 +193,27 @@ app.post("/retUser", (request, response) => {
           querySnapshot.forEach(doc => {
             if (doc.data().Email === email) {
               const grps = doc.data().Groups;
+              var grpNames = [];
+              var i;
 
-              response.render("user.hbs", {
-                user: email,
-                groups: grps
-              });
+              db.collection("groups")
+                .get()
+                .then(querySnapshot => {
+                  querySnapshot.forEach(doc => {
+                    for(i=0;i<grps.length;i++)
+                    {
+                      if(grps[i] === doc.id)
+                      {
+                        grpNames.push(doc.data().Group_name);
+                      }
+                    }
+                  })
+
+                  response.render("user.hbs", {
+                    user: email,
+                    groups: grpNames
+                  });
+                })
             }
           });
         });
@@ -303,9 +319,9 @@ app.post("/addGrp", (request, response) => {
                   Groups: new_arr
                 });
               console.log(doc.data().Groups);
-              response.render("user.hbs", {
-                groups: doc.data().Groups
-              });
+              // response.render("user.hbs", {
+              //   groups: doc.data().Groups
+              // });
             }
           });
         });
