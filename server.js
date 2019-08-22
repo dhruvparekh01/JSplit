@@ -77,47 +77,54 @@ app.get("/addGrp", (req, res) => {
 });
 
 app.get("/group/:page", (request, response) => {
-  // TODO: we should use document id as the group url instead of email_groupname
-  // const ref = db.collection("groups").doc();
-  // const id = ref.id;
-  // console.log(id);
-  // // console.log(ref);
-  //
-  // // Unique page for each group
-  // var curUrl = request.params.id; // get the current url which is the group name and the email of member calling for it, concatnated with _
-  // var grp_name = id; // extract the group name
-  // var mem_name = ""; // extract the member email
-  // console.log(grp_name);
-  // console.log(mem_name);
-  //
-  // db.collection("groups")
-  //   .get()
-  //   .then(querySnapshot => {
-  //     querySnapshot.forEach(doc => {
-  //       if (doc.data().Group_name === grp_name) {
-  //         // if the group with same name is found in the database
-  //         // if(doc.data().Member1 === mem_name)  // check if the member calling for the group is a member of it (as there can be multiple groups with same name)
-  //         // {
-  //         var members = doc.data().Member1;
-  //
-  //         db.collection("users")
-  //           .get()
-  //           .then(querySnapshot => {
-  //             // Get the names of all members from the users table nased on their UIDs stored in the Group table
-  //             querySnapshot.forEach(doc => {
-  //               if (doc.data().UID === members) {
-  //                 response.render("test.hbs", {
-  //                   grp: grp_name,
-  //                   member: doc.data().Name
-  //                 });
-  //               }
-  //             });
-  //           });
-  //         // }
-  //       }
-  //     });
-  //   });
-  response.render("test.hbs");
+  const id = request.params.page;
+  console.log(id);
+
+  db.collection('groups').doc(id).get()  // get the group that the url is pointing to
+  .then(doc => {
+    if (!doc.exists)
+    {
+      response.render("404.hbs");  // if the group does not exists, show a 404 page
+    }
+    else
+    {
+      var member_ids = doc.data().Members;  // get the array of group members (consists of their uids)
+      var members = {};  // an object to return to the client containing all the group members' name and uids
+      // var i;
+      // var a = this;
+      // console.log("This is "+a);
+
+      for(i=0;i<member_ids.length;i++)  // for loop to get the corresponding name sof all the members in the group based on their ids
+      {
+        var ref = db.collection('users');
+
+        var queryRef = ref.where('UID', '==', member_ids[i]);  // query to get user whose uid is the same as member_ids[i]
+
+        // var fuck="";
+
+        // function setVar(v1, v2)
+        // {
+        //   a.members[v1] = v2;
+        //   console.log(members);
+        // }
+
+        queryRef.get()
+        .then(snapshot => {
+          snapshot.forEach(doc =>{
+            console.log(doc.id, '=>', doc.data());  // got all the details of the current group member
+            // TODO get this info into the members variable which is in the outer scope
+            // setVar(doc.data().Name, doc.id);
+          })
+        })
+      }
+      console.log(members);  // members is empty for now
+      response.render("test.hbs", {
+        grp: doc.data().Group_name,
+        member: members
+      })
+    }
+  })
+
 });
 
 app.post("/newUser", (request, response) => {
@@ -134,23 +141,25 @@ app.post("/newUser", (request, response) => {
       .createUserWithEmailAndPassword(email, password1) // firebase Authentication
       .then(function() {
         /* Add the user to the "users" table*/
-        db.collection("users")
-          .add({
+        db.collection("users").doc(firebase.auth().currentUser.uid)
+          .set({
             Name: name,
             Email: email,
             UID: firebase.auth().currentUser.uid,
             Groups: []
-          })
-          .then(function(docRef) {
-            console.log("Document written with ID: ", docRef.id);
-            var uid = firebase.auth().currentUser.uid;
-            console.log(uid);
+          });
+          // .then(function(docRef) {
+          //   console.log("Document written with ID: ", docRef.id);
+          //   // var uid = docRef.id;
+          //   // db.collection("users").doc(docRef.id).update({
+          //   //   UID: uid
+          //   })
 
             /* If firebase Authentication is successful, make a table for the user.
           The name of the table is the user's email. This table represents the
           user's contact list. Add a demo user to this table.*/
             db.collection("balances")
-              .doc(uid)
+              .doc(firebase.auth().currentUser.uid)
               .set({
                 placeholder: "you need contacts"
               })
@@ -167,13 +176,12 @@ app.post("/newUser", (request, response) => {
 
         //Now render the custom page created for the user
         response.render("user.hbs", {});
-      })
-      .catch(function(error) {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log(errorMessage);
-      });
-  }
+      }
+      // .catch(function(error) {
+      //   var errorCode = error.code;
+      //   var errorMessage = error.message;
+      //   console.log(errorMessage);
+
 });
 
 // Function for Signing in the returning users
@@ -193,10 +201,11 @@ app.post("/retUser", (request, response) => {
         .then(querySnapshot => {
           querySnapshot.forEach(doc => {
             if (doc.data().Email === email) {
-              const grps = doc.data().Groups;
-              var grpNames = {};
+              const grps = doc.data().Groups;  // an array of group ids that the authenticated user is associated with
+              var grpNames = {};  // a dictionary that will store the group names and ids of the current user
               var i;
 
+              //TODO following is a very unoptimized code... optimize it
               db.collection("groups")
                 .get()
                 .then(querySnapshot => {
@@ -212,7 +221,7 @@ app.post("/retUser", (request, response) => {
                       }
                     }
                   })
-                  // console.log(grpNames);
+                  // the above code populated the dictionary of group name: group id pairs
 
                   response.render("user.hbs", {
                     user: email,
@@ -310,7 +319,7 @@ app.post("/addGrp", (request, response) => {
       // refresh page to get new group?
       // setTimeout(res.redirect(req.originalUrl, 2000));
 
-      db.collection("users")
+      db.collection("users")  // update the users table, add the new group to the groups array of the current user
         .get()
         .then(querySnapshot => {
           querySnapshot.forEach(doc => {
