@@ -148,6 +148,33 @@ app.post("/newUser", (request, response) => {
             UID: firebase.auth().currentUser.uid,
             Groups: []
           });
+
+          var sql = require("mssql");
+
+          // config for your database
+          var config = {
+              user: 'dhruv',
+              password: '12345678',
+              server: 'localhost',
+              database: 'JSplit'
+          };
+
+          sql.connect(config, function (err) {
+    
+            if (err) console.log(err);
+    
+            // create Request object
+            var request = new sql.Request();
+
+            console.log("insert into users values( RAND(), '" + name + "', '" + email + "')");
+
+            request.query("insert into users values( RAND(), '" + name + "', '" + email + "')", function (err, recordset) {
+            
+              if (err) console.log(err)
+            })
+          })
+              
+        });
           // .then(function(docRef) {
           //   console.log("Document written with ID: ", docRef.id);
           //   // var uid = docRef.id;
@@ -158,21 +185,18 @@ app.post("/newUser", (request, response) => {
             /* If firebase Authentication is successful, make a table for the user.
           The name of the table is the user's email. This table represents the
           user's contact list. Add a demo user to this table.*/
-            db.collection("balances")
-              .doc(firebase.auth().currentUser.uid)
-              .set({
-                placeholder: "you need contacts"
-              })
-              .then(function(docRef) {
-                // console.log("Document written with ID: ", docRef.id);
-              })
-              .catch(function(error) {
-                console.error("Error adding document: ", error);
-              });
-          })
-          .catch(function(error) {
-            console.error("Error adding document: ", error);
-          });
+            // db.collection("balances")
+            //   .doc(firebase.auth().currentUser.uid)
+            //   .set({
+            //     placeholder: "you need contacts"
+            //   })
+            //   .then(function(docRef) {
+            //     // console.log("Document written with ID: ", docRef.id);
+            //   })
+            //   .catch(function(error) {
+            //     console.error("Error adding document: ", error);
+            //   });
+          
 
         //Now render the custom page created for the user
         response.render("user.hbs", {});
